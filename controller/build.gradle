@@ -1,0 +1,45 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm'
+    id "org.openapi.generator"
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile project(':services')
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+    testImplementation 'org.springframework.security:spring-security-test'
+}
+
+openApiGenerate {
+    generatorName = "kotlin-spring"
+    inputSpec = "$rootDir/api/src/api.yaml".toString()
+    outputDir = "$buildDir/generated".toString()
+    apiPackage = "at.template.sat.api"
+    invokerPackage = "at.template.sat"
+    modelPackage = "at.template.sat.model"
+    modelFilesConstrainedTo = []
+    configOptions = [
+            dateLibrary       : "java8",
+            interfaceOnly     : "true",
+            library           : "spring",
+            gradleBuildFile   : "true",
+            enumPropertyNaming: "UPPERCASE"
+    ]
+}
+
+sourceSets {
+    main.kotlin.srcDirs += "$buildDir/generated/src/"
+}
+
+compileKotlin.dependsOn tasks.openApiGenerate

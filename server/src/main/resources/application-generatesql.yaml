@@ -1,0 +1,13 @@
+spring:
+  profiles: generatesql
+  flyway:
+    enabled: false
+  jpa:
+    properties:
+      javax:
+        persistence:
+          schema-generation:
+            create-source: metadata
+            scripts:
+              action: create
+              create-target: ./domain/src/main/resources/db/migration/V1.0__2099_99_99_0000_Descriptive_Name_PLS.sql

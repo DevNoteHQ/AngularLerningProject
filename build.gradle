@@ -1,0 +1,80 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:2.2.5.RELEASE"
+    }
+}
+
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.3.61' apply false
+    id 'org.jetbrains.kotlin.plugin.spring' version '1.3.61' apply false
+    id "org.springframework.boot" version "2.1.8.RELEASE" apply false
+    id "io.spring.dependency-management" version "1.0.8.RELEASE" apply false
+    id "com.github.node-gradle.node" version "1.5.1" apply false
+    id "org.openapi.generator" version "4.2.3" apply false
+}
+
+def nodeProjects = [ ":frontend" ]
+
+subprojects {
+    group 'at.template.sat'
+    version '0.1.0-SNAPSHOT'
+
+    apply plugin: 'org.jetbrains.kotlin.jvm'
+    apply plugin: "idea"
+
+    repositories {
+        mavenCentral()
+    }
+}
+
+configure(subprojects.findAll { !(it.name in nodeProjects) }) {
+    apply plugin: "kotlin"
+    apply plugin: "kotlin-kapt"
+    apply plugin: "kotlin-spring"
+    apply plugin: "application"
+    apply plugin: "org.springframework.boot"
+    apply plugin: 'io.spring.dependency-management'
+
+    mainClassName = 'at.template.sat.Application'
+
+    configurations {
+        developmentOnly
+        runtimeClasspath {
+            extendsFrom developmentOnly
+        }
+        compileOnly {
+            extendsFrom annotationProcessor
+        }
+    }
+
+    dependencyManagement {
+        dependencies {
+            dependency("org.jetbrains.kotlin:kotlin-reflect:1.3.61")
+        }
+    }
+
+    dependencies {
+        implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+        implementation "org.jetbrains.kotlin:kotlin-reflect:1.3.61"
+    }
+
+    jar {
+        enabled=true
+    }
+
+    compileKotlin {
+        kotlinOptions.jvmTarget = "12"
+    }
+
+    compileTestKotlin {
+        kotlinOptions.jvmTarget = "12"
+    }
+
+    test {
+        useJUnitPlatform()
+    }
+}
